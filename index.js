@@ -1,16 +1,19 @@
 const os = require('os')
 const ping = require('ping')
+const bunyan = require('bunyan')
+	, bformat = require('bunyan-format')  
+	, formatOut = bformat({ outputMode: 'short' })
+
+var log = bunyan.createLogger({name: 'ping-test', stream: formatOut})
 
 function get_ips(network_interface) {
 	const interfaces = os.networkInterfaces()
 	
 	const chosen_interface = interfaces[network_interface]
-
-	const ips = chosen_interface.map(ip => {
-		if (ip.family === 'IPv4' && !ip.internal && ip.address != null) {
-			return ip.address
-		}
-	})
+	log.debug(`Interfaces present ${interfaces}`);
+	const ips = chosen_interface.filter(ip => {
+		return ip.family === 'IPv4' && !ip.internal && ip.address != null
+	}).map(ip => ip.address)
 	
 	return ips
 }
@@ -30,16 +33,20 @@ function main() {
 
 	if (args[0]) {
 		
-		console.log('Get Ip addresses')
+		log.info('Get Ip addresses')
 		const ips = get_ips(args[0])
-		ping_ip(ips).then(async (data) => await console.log(data))
+		ping_ip(ips).then(async (data) => await log.info(data))
 	
-		console.log(`Pinging ${ips.toString()}....\n`)
+		log.info(`Pinging ${ips.toString()}....\n`)
 	} else {
-		console.log(`Information entered ${args[0]} is not valid or available`)
+		log.fatal(`Information entered ${args[0]} is not valid or available use ${get_ips()}`)
 	}
 }
 
 if (require.main === module) {
-	main();
+	try {
+		main();
+	} catch (error) {
+		log.error(error);
+	}
 }

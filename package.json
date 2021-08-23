@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha"
   },
   "author": "Timothy Brantley II",
   "license": "ISC",
   "dependencies": {
+    "bunyan": "^1.8.15",
+    "bunyan-format": "^0.2.1",
     "ping": "^0.4.1"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.0"
   }
 }
