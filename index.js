@@ -12,7 +12,7 @@ function get_ips(network_interface) {
 	const chosen_interface = interfaces[network_interface]
 	log.debug(`Interfaces present ${interfaces}`);
 	const ips = chosen_interface.filter(ip => {
-		return ip.family === 'IPv4' && !ip.internal && ip.address != null
+		return ip.family === 'IPv4' && ip.address != null
 	}).map(ip => ip.address)
 	
 	return ips
@@ -41,6 +41,11 @@ function main() {
 	} else {
 		log.fatal(`Information entered ${args[0]} is not valid or available use ${get_ips()}`)
 	}
+}
+
+module.exports = {
+	get_ips: get_ips,
+	ping: ping_ip
 }
 
 if (require.main === module) {
